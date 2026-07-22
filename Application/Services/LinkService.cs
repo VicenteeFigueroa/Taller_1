@@ -82,10 +82,10 @@ public sealed class LinkService : ILinkService
     }
 
 
-/// Genera un código corto usando un ULID solo como fuente de unicidad, pero nunca lo expone:
-/// se hashea con SHA-256 (irreversible) para que no se pueda inferir el timestamp de creación
-/// ni el orden de creación entre links a partir del shortUrl público.
-
+/// Generates a short code using a ULID only as a source of uniqueness, but never exposes it:
+/// it's hashed with SHA-256 (irreversible) so that neither the creation timestamp nor the
+/// creation order between links can be inferred from the public shortUrl.
+/// 
 private static string GenerateShortUrl()
 {
     var ulid = Ulid.NewUlid();
