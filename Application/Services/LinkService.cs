@@ -81,11 +81,11 @@ public sealed class LinkService : ILinkService
         return links.Select(LinkResponse.From).ToList();
     }
 
-   /// <summary>
+
 /// Genera un código corto usando un ULID solo como fuente de unicidad, pero nunca lo expone:
 /// se hashea con SHA-256 (irreversible) para que no se pueda inferir el timestamp de creación
 /// ni el orden de creación entre links a partir del shortUrl público.
-/// </summary>
+
 private static string GenerateShortUrl()
 {
     var ulid = Ulid.NewUlid();

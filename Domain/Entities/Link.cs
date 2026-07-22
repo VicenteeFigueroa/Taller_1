@@ -21,6 +21,14 @@ public class Link
 
     [Required] public int Clicks { get; private set; }
 
+    
+    /// Set once at creation and never modified afterwards. Used as the stable "last modified"
+    /// timestamp for HTTP caching validators (see UrlRedirectEndpoint) — unlike Clicks, which
+    /// changes on almost every request, this value stays constant for the link's lifetime.
+   
+    [Required]
+    public DateTime CreatedAtUtc { get; private set; }
+
     [ForeignKey(nameof(User))]
     public long UserId { get; private set; }
 
@@ -45,6 +53,7 @@ public class Link
             : throw new ArgumentOutOfRangeException(nameof(userId), "UserId must be greater than zero.");
 
         Clicks = 0;
+        CreatedAtUtc = DateTime.UtcNow;
     }
 
     public void IncrementClicks() => Clicks++;
