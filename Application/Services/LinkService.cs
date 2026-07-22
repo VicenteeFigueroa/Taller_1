@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Shortly.Application.DTOs;
 using Shortly.Application.Interfaces;
 using Shortly.Domain.Entities;
@@ -19,7 +20,7 @@ public sealed class LinkService : ILinkService
     {
         _logger.LogDebug("Creating link for URL: {Url} and userId: {UserId}", url, userId);
 
-        var shortUrl = Ulid.NewUlid().ToString()[..12].ToLowerInvariant();
+        var shortUrl = GenerateShortUrl();
         var link = new Link(url, shortUrl, userId);
 
         await _linkRepository.AddAsync(link);
@@ -79,4 +80,22 @@ public sealed class LinkService : ILinkService
         _logger.LogInformation("Retrieved {Count} links for userId: {UserId}.", links.Count, userId);
         return links.Select(LinkResponse.From).ToList();
     }
+
+   /// <summary>
+/// Genera un código corto usando un ULID solo como fuente de unicidad, pero nunca lo expone:
+/// se hashea con SHA-256 (irreversible) para que no se pueda inferir el timestamp de creación
+/// ni el orden de creación entre links a partir del shortUrl público.
+/// </summary>
+private static string GenerateShortUrl()
+{
+    var ulid = Ulid.NewUlid();
+    var hash = SHA256.HashData(ulid.ToByteArray());
+
+    var encoded = Convert.ToBase64String(hash)
+        .Replace('+', '-')
+        .Replace('/', '_')
+        .Replace("=", string.Empty);
+
+    return encoded[..12].ToLowerInvariant();
+}
 }

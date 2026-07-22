@@ -14,5 +14,11 @@ Referrer-Policy y Permissions-Policy. Necesito que cada header tenga un
 comentario explicando qué tipo de ataque mitiga"
 
 
+"Estoy generando el shortUrl con `Ulid.NewUlid().ToString()[..12]`, pero el ULID 
+codifica un timestamp en sus primeros bits, así que se puede inferir cuándo se 
+creó un link a partir del código público. Necesito reemplazar eso por una 
+representación irreversible, manteniendo unicidad y caracteres URL-safe. 
+¿Cómo lo implemento y cómo valido que ya no queda el patrón de orden temporal?"
+
 ---
 *Este documento será actualizado progresivamente conforme se desarrollen los demás puntos del taller.*
