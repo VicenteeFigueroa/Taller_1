@@ -87,6 +87,9 @@ if (!app.Environment.IsDevelopment())
 // Redirects HTTP requests to HTTPS automatically
 // app.UseHttpsRedirection();
 
+// Enables custom security headers for all responses
+app.UseMiddleware<Shortly.Middlewares.SecurityHeadersMiddleware>();
+
 // Serves static files from the wwwroot/ folder
 app.UseStaticFiles();
 

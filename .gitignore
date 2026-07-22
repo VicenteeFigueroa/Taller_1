@@ -79,3 +79,5 @@ fabric.properties
 bin/
 obj/
 database.db
+database.db-shm
+database.db-wal
