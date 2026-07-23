@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using Shortly.Application.DTOs;
 using Shortly.Application.Interfaces;
 
@@ -13,6 +14,21 @@ public static class UrlRedirectEndpoint
         app.MapGet("/{shortUrl}", async (string shortUrl, HttpRequest request, HttpResponse response,
             ILinkService linkService) =>
         {
+            // 400: the requested shortUrl isn't even shaped like one of ours (wrong length or
+            // characters outside our URL-safe base64 alphabet). This is a client error distinct
+            // from "not found" — the request itself is malformed, not just pointing at a
+            // resource that happens not to exist, so 400 is the semantically correct code
+            // rather than 404.
+            if (!ShortUrlFormat.IsMatch(shortUrl))
+            {
+                return Results.Problem(
+                    title: "Malformed short code",
+                    detail: $"'{shortUrl}' is not a validly-formatted short code. Expected exactly " +
+                            "12 characters from the URL-safe base64 alphabet (a-z, 0-9, '-', '_').",
+                    statusCode: StatusCodes.Status400BadRequest,
+                    type: "https://tools.ietf.org/html/rfc7231#section-6.5.1");
+            }
+
             try
             {
                 var link = await linkService.GetLink(shortUrl);
@@ -42,10 +58,25 @@ public static class UrlRedirectEndpoint
             }
             catch (KeyNotFoundException)
             {
-                return Results.NotFound();
+                // 404: well-formed short code, but no link is registered under it. Results.Problem
+                // produces an RFC 7807 "application/problem+json" body (title/status/detail/type)
+                // instead of an empty 404, so API clients get a machine-readable reason instead of
+                // having to guess from the status code alone.
+                return Results.Problem(
+                    title: "Short link not found",
+                    detail: $"No link is registered for short code '{shortUrl}'.",
+                    statusCode: StatusCodes.Status404NotFound,
+                    type: "https://tools.ietf.org/html/rfc7231#section-6.5.4");
             }
         });
     }
+
+    /// <summary>
+    /// Matches the exact shape GenerateShortUrl() in LinkService produces: 12 characters from
+    /// the URL-safe base64 alphabet, lowercased. Anything outside this shape cannot possibly be
+    /// a real short code, so it's rejected as a 400 before ever touching the database.
+    /// </summary>
+    private static readonly Regex ShortUrlFormat = new("^[a-z0-9_-]{12}$", RegexOptions.Compiled);
 
     /// Picks which of 301/302/307 semantically matches this link's actual permanence, instead
     /// of always answering 302. Results.Redirect's (permanent, preserveMethod) pair maps
