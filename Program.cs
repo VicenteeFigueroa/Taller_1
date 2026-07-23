@@ -57,6 +57,20 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Login";
         options.AccessDeniedPath = "/Error";
+
+        // HttpOnly: blocks JavaScript from reading the cookie, which prevents XSS attacks from stealing the cookie
+        options.Cookie.HttpOnly = true;
+
+        // SameSite: blocks the browser from sending this cookie on cross-site requests, which
+        // prevents CSRF attacks. Strict is the most secure option, but it can break some
+        // legitimate cross-site use cases (e.g. if the user clicks a link to your
+        options.Cookie.SameSite = SameSiteMode.Strict;
+
+      
+        options.Cookie.Path = "/";
+        options.Cookie.SecurePolicy = builder.Environment.IsProduction()
+            ? CookieSecurePolicy.Always
+            : CookieSecurePolicy.SameAsRequest;
     });
 
 // Injects the ticket store into the cookie options after the service provider is built
