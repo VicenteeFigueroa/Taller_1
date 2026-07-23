@@ -84,6 +84,9 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
 }
 
+// Enables performance measurement for all requests
+app.UseMiddleware<Shortly.Middlewares.PerformanceMeasurementMiddleware>();
+
 // Redirects HTTP requests to HTTPS automatically
 // app.UseHttpsRedirection();
 

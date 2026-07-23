@@ -20,5 +20,11 @@ creó un link a partir del código público. Necesito reemplazar eso por una
 representación irreversible, manteniendo unicidad y caracteres URL-safe. 
 ¿Cómo lo implemento y cómo valido que ya no queda el patrón de orden temporal?"
 
+"Genérame un archivo llamado PerformanceMeasurementMiddleware que mida la duración de 
+cada request y agregue el header `X-Response-Time: <ms>ms` a la respuesta, necesito 
+que genere un log específico para las requests que superen los 500ms, incluyendo método, 
+path, status code y tiempo transcurrido, para poder hacer filtros mas facil."
+
+
 ---
 *Este documento será actualizado progresivamente conforme se desarrollen los demás puntos del taller.*
