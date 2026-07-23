@@ -4,7 +4,7 @@ namespace Shortly.Application.Interfaces;
 
 public interface ILinkService
 {
-    Task<LinkResponse> CreateLink(string url, long userId);
+    Task<LinkResponse> CreateLink(string url, long userId, DateTime? expiresAtUtc = null);
 
     Task<LinkResponse> IncrementClicks(long linkId);
 

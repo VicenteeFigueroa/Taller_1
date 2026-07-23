@@ -29,6 +29,11 @@ public class Link
     [Required]
     public DateTime CreatedAtUtc { get; private set; }
 
+    /// Null for a normal, indefinitely-lived link. When set, marks the link as temporary/expiring —
+    /// used by UrlRedirectEndpoint to decide it must always be redirected with 307 (never cached
+    /// as permanent), regardless of how many clicks it has accumulated.
+    public DateTime? ExpiresAtUtc { get; private set; }
+
     [ForeignKey(nameof(User))]
     public long UserId { get; private set; }
 
@@ -38,7 +43,7 @@ public class Link
     {
     }
 
-    public Link(string url, string shortUrl, long userId)
+    public Link(string url, string shortUrl, long userId, DateTime? expiresAtUtc = null)
     {
         Url = string.IsNullOrWhiteSpace(url)
             ? throw new ArgumentException("URL is required.", nameof(url))
@@ -54,6 +59,7 @@ public class Link
 
         Clicks = 0;
         CreatedAtUtc = DateTime.UtcNow;
+        ExpiresAtUtc = expiresAtUtc;
     }
 
     public void IncrementClicks() => Clicks++;

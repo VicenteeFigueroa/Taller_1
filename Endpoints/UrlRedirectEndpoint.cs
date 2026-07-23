@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using Shortly.Application.DTOs;
 using Shortly.Application.Interfaces;
 
 namespace Shortly.Endpoints;
@@ -36,13 +37,52 @@ public static class UrlRedirectEndpoint
                     return Results.StatusCode(StatusCodes.Status304NotModified);
                 }
 
-                return Results.Redirect(link.Url);
+                var (permanent, preserveMethod) = DecideRedirectSemantics(link);
+                return Results.Redirect(link.Url, permanent, preserveMethod);
             }
             catch (KeyNotFoundException)
             {
                 return Results.NotFound();
             }
         });
+    }
+
+    /// Picks which of 301/302/307 semantically matches this link's actual permanence, instead
+    /// of always answering 302. Results.Redirect's (permanent, preserveMethod) pair maps
+    /// directly onto the four HTTP redirect codes:
+    ///   permanent=false, preserveMethod=false -> 302 Found
+    ///   permanent=false, preserveMethod=true  -> 307 Temporary Redirect
+    ///   permanent=true,  preserveMethod=false -> 301 Moved Permanently
+    ///   permanent=true,  preserveMethod=true  -> 308 Permanent Redirect (not produced here, but
+    ///                                            it's the "corrected 301" the same way 307 is
+    ///                                            the "corrected 302" — see the table below)
+    ///
+    /// Decision order:
+    ///  1) An explicit ExpiresAtUtc makes a link temporary by definition — its target or
+    ///     validity can change at any moment, so clients/caches must always come back and
+    ///     re-check rather than memorize the mapping. 307 also guarantees the original method
+    ///     and body survive the redirect, which matters for temporary/expiring resources more
+    ///     than for a simple permanent alias.
+    ///  2) A stable (non-expiring) link that has proven popular (>100 accesses) is treated as
+    ///     permanent enough that clients/caches are authorized to remember it indefinitely —
+    ///     that authorization is exactly what 301 grants.
+    ///  3) Everything else: an ordinary, still-young link with no stated permanence guarantee
+    ///     gets the historically-default 302 — cacheable only if explicit caching headers say
+    ///     so (which ours do, via ETag/Last-Modified), never assumed by the client on its own.
+
+    private static (bool Permanent, bool PreserveMethod) DecideRedirectSemantics(LinkResponse link)
+    {
+        if (link.ExpiresAtUtc is not null)
+        {
+            return (Permanent: false, PreserveMethod: true); // 307
+        }
+
+        if (link.Clicks > 100)
+        {
+            return (Permanent: true, PreserveMethod: false); // 301
+        }
+
+        return (Permanent: false, PreserveMethod: false); // 302
     }
 
 

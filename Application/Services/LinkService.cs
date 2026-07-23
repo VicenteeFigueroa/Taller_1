@@ -16,12 +16,12 @@ public sealed class LinkService : ILinkService
         _linkRepository = linkRepository ?? throw new ArgumentNullException(nameof(linkRepository));
     }
 
-    public async Task<LinkResponse> CreateLink(string url, long userId)
+    public async Task<LinkResponse> CreateLink(string url, long userId, DateTime? expiresAtUtc = null)
     {
         _logger.LogDebug("Creating link for URL: {Url} and userId: {UserId}", url, userId);
 
         var shortUrl = GenerateShortUrl();
-        var link = new Link(url, shortUrl, userId);
+        var link = new Link(url, shortUrl, userId, expiresAtUtc);
 
         await _linkRepository.AddAsync(link);
         await _linkRepository.SaveChangesAsync();
