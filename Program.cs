@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.IO.Compression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
@@ -75,6 +77,23 @@ builder.Services.AddScoped<ILinkRepository, LinkRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILinkService, LinkService>();
 
+// Registers response compression with Brotli and Gzip
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+    // Default MIME types safely cover HTML, CSS, JS, JSON, etc.
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
+
 // Builds the application with all registered configurations
 var app = builder.Build();
 
@@ -95,6 +114,9 @@ app.UseMiddleware<Shortly.Middlewares.SecurityHeadersMiddleware>();
 
 // Serves static files from the wwwroot/ folder
 app.UseStaticFiles();
+
+// Enables response compression for compressible content
+app.UseResponseCompression();
 
 // Enables request routing
 app.UseRouting();

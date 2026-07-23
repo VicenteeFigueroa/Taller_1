@@ -25,6 +25,13 @@ cada request y agregue el header `X-Response-Time: <ms>ms` a la respuesta, neces
 que genere un log específico para las requests que superen los 500ms, incluyendo método, 
 path, status code y tiempo transcurrido, para poder hacer filtros mas facil."
 
+"Necesito configurar compresión de respuestas en ASP.NET Core usando 
+AddResponseCompression() con los proveedores Brotli y Gzip. Configúrame 
+los MIME types de forma segura"
+
+"Ayúdame a generar un script que verifique la compresión de respuestas: necesito comparar el tamaño de / sin header Accept-Encoding vs con Accept-Encoding: br, y luego lo mismo con gzip. Quiero que muestre el Content-Encoding recibido y el % de bytes ahorrados"
 
 ---
 *Este documento será actualizado progresivamente conforme se desarrollen los demás puntos del taller.*
+
+
