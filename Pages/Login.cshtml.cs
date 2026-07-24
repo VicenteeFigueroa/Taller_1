@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.RateLimiting;
 using Shortly.Application.Interfaces;
 
 namespace Shortly.Pages;
 
+[EnableRateLimiting("LoginPolicy")]
 public class LoginModel : PageModel
 {
     private readonly IUserService _userService;

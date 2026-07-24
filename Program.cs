@@ -6,6 +6,8 @@ using System.IO.Compression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 using Scalar.AspNetCore;
 using Serilog;
 using Shortly.Application.Interfaces;
@@ -107,6 +109,19 @@ builder.Services.AddCors(options =>
 // Registers Health Checks service
 builder.Services.AddHealthChecks();
 
+// Registers Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("LoginPolicy", opt =>
+    {
+        opt.PermitLimit = 5;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
 // Registers response compression with Brotli and Gzip
 builder.Services.AddResponseCompression(options =>
 {
@@ -156,6 +171,9 @@ app.UseRouting();
 
 // Enables CORS (must come after UseRouting and before UseAuthentication/UseEndpoints)
 app.UseCors("RestrictiveCorsPolicy");
+
+// Enables Rate Limiting
+app.UseRateLimiter();
 
 // Enables authentication (must come after UseRouting)
 app.UseAuthentication();
