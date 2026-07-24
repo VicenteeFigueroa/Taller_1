@@ -1,0 +1,72 @@
+Usando la configuración de inicio de C:\Users\vjavi\Desktop\TALLER1ARQ\shortly\Properties\launchSettings.json...
+Compilando...
+C:\Users\vjavi\Desktop\TALLER1ARQ\shortly\Shortly.csproj : warning NU1903: El paquete "Microsoft.OpenApi" 2.0.0 tiene una vulnerabilidad de gravedad alta conocida, https://github.com/advisories/GHSA-v5pm-xwqc-g5wc
+C:\Users\vjavi\Desktop\TALLER1ARQ\shortly\Shortly.csproj : warning NU1903: El paquete "SQLitePCLRaw.lib.e_sqlite3" 2.1.11 tiene una vulnerabilidad de gravedad alta conocida, https://github.com/advisories/GHSA-2m69-gcr7-jv3q
+C:\Users\vjavi\Desktop\TALLER1ARQ\shortly\Shortly.csproj : warning NU1903: El paquete "Microsoft.OpenApi" 2.0.0 tiene una vulnerabilidad de gravedad alta conocida, https://github.com/advisories/GHSA-v5pm-xwqc-g5wc
+C:\Users\vjavi\Desktop\TALLER1ARQ\shortly\Shortly.csproj : warning NU1903: El paquete "SQLitePCLRaw.lib.e_sqlite3" 2.1.11 tiene una vulnerabilidad de gravedad alta conocida, https://github.com/advisories/GHSA-2m69-gcr7-jv3q
+2026-07-23 20:37:31,695 [INFORMAT] [ReqId=] Microsoft.EntityFrameworkCore.Database.Command (17900/) - Executed DbCommand (20ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2026-07-23 20:37:31,974 [INFORMAT] [ReqId=] Microsoft.EntityFrameworkCore.Database.Command (17900/) - Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "users" AS "u")
+2026-07-23 20:37:32,091 [INFORMAT] [ReqId=] Microsoft.Hosting.Lifetime (17900/) - Now listening on: http://localhost:5064
+2026-07-23 20:37:32,093 [INFORMAT] [ReqId=] Microsoft.Hosting.Lifetime (17900/) - Application started. Press Ctrl+C to shut down.
+2026-07-23 20:37:32,093 [INFORMAT] [ReqId=] Microsoft.Hosting.Lifetime (17900/) - Hosting environment: Development
+2026-07-23 20:37:32,093 [INFORMAT] [ReqId=] Microsoft.Hosting.Lifetime (17900/) - Content root path: C:\Users\vjavi\Desktop\TALLER1ARQ\shortly
+2026-07-23 20:37:32,654 [DEBUG] [ReqId=0HNN93EVU0NVU:00000001] Shortly.Application.Services.LinkService (17900/.NET TP Worker) - Retrieving link with shortUrl: missing-link
+2026-07-23 20:37:32,801 [ERROR] [ReqId=0HNN93EVU0NVU:00000001] Microsoft.EntityFrameworkCore.Database.Command (17900/.NET TP Worker) - Failed executing DbCommand (7ms) [Parameters=[@shortUrl='?' (Size = 12)], CommandType='Text', CommandTimeout='30']
+SELECT "l"."Id", "l"."Clicks", "l"."CreatedAtUtc", "l"."ExpiresAtUtc", "l"."ShortUrl", "l"."Url", "l"."UserId"
+FROM "links" AS "l"
+WHERE "l"."ShortUrl" = @shortUrl
+LIMIT 1
+2026-07-23 20:37:32,815 [ERROR] [ReqId=0HNN93EVU0NVU:00000001] Microsoft.EntityFrameworkCore.Query (17900/.NET TP Worker) - An exception occurred while iterating over the results of a query for context type 'Shortly.Infrastructure.Persistence.AppDbContext'.
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such column: l.CreatedAtUtc'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such column: l.CreatedAtUtc'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+2026-07-23 20:37:32,822 [ERROR] [ReqId=0HNN93EVU0NVU:00000001] Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware (17900/.NET TP Worker) - An unhandled exception has occurred while executing the request.
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such column: l.CreatedAtUtc'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at Shortly.Application.Services.LinkService.GetLink(String shortUrl) in C:\Users\vjavi\Desktop\TALLER1ARQ\shortly\Application\Services\LinkService.cs:line 55
+   at Shortly.Endpoints.UrlRedirectEndpoint.<>c.<<MapUrlRedirect>b__0_0>d.MoveNext() in C:\Users\vjavi\Desktop\TALLER1ARQ\shortly\Endpoints\UrlRedirectEndpoint.cs:line 34
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Shortly.Middlewares.SecurityHeadersMiddleware.InvokeAsync(HttpContext context) in C:\Users\vjavi\Desktop\TALLER1ARQ\shortly\Middlewares\SecurityHeadersMiddleware.cs:line 44
+   at Shortly.Middlewares.PerformanceMeasurementMiddleware.InvokeAsync(HttpContext context) in C:\Users\vjavi\Desktop\TALLER1ARQ\shortly\Middlewares\PerformanceMeasurementMiddleware.cs:line 32
+   at Shortly.Middlewares.RequestTracingMiddleware.InvokeAsync(HttpContext context) in C:\Users\vjavi\Desktop\TALLER1ARQ\shortly\Middlewares\RequestTracingMiddleware.cs:line 28
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)

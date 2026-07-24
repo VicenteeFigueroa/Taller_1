@@ -25,9 +25,8 @@ cada request y agregue el header `X-Response-Time: <ms>ms` a la respuesta, neces
 que genere un log específico para las requests que superen los 500ms, incluyendo método, 
 path, status code y tiempo transcurrido, para poder hacer filtros mas facil."
 
-"Necesito configurar compresión de respuestas en ASP.NET Core usando 
-AddResponseCompression() con los proveedores Brotli y Gzip. Configúrame 
-los MIME types de forma segura"
+"Necesito configurar compresión de respuestas usando AddResponseCompression() 
+con los proveedores Brotli y Gzip. Configúrame los MIME types de forma segura"
 
 "Ayúdame a generar un script que verifique la compresión de respuestas: necesito 
 comparar el tamaño de / sin header Accept-Encoding vs con Accept-Encoding: br, y 
@@ -37,6 +36,12 @@ bytes ahorrados"
 "Ayúdame a definir una política de CORS que permita solo orígenes de confianza y 
 bloquee llamadas cross-origin no autorizadas. Necesito que la política especifique 
 explícitamente los orígenes, métodos y headers permitidos."
+
+"Genérame un middleware llamado RequestTracingMiddleware que cree o propague un 
+X-Request-Id que lo agregue al contexto de logging de Serilog (LogContext) para que 
+aparezca en todos los logs de esa request, y lo devuelva en el header de la respuesta. 
+Necesito igual que funcione en flujos de redirección, para que el mismo ID quede relacionado 
+en los logs del request original y en los logs de la respuesta final."
 
 ---
 *Este documento será actualizado progresivamente conforme se desarrollen los demás puntos del taller.*

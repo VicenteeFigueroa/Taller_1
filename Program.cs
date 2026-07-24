@@ -128,6 +128,9 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
 }
 
+// Traces requests with X-Request-Id (must be first to capture all logs)
+app.UseMiddleware<Shortly.Middlewares.RequestTracingMiddleware>();
+
 // Enables performance measurement for all requests
 app.UseMiddleware<Shortly.Middlewares.PerformanceMeasurementMiddleware>();
 
