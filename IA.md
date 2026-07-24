@@ -29,9 +29,14 @@ path, status code y tiempo transcurrido, para poder hacer filtros mas facil."
 AddResponseCompression() con los proveedores Brotli y Gzip. Configúrame 
 los MIME types de forma segura"
 
-"Ayúdame a generar un script que verifique la compresión de respuestas: necesito comparar el tamaño de / sin header Accept-Encoding vs con Accept-Encoding: br, y luego lo mismo con gzip. Quiero que muestre el Content-Encoding recibido y el % de bytes ahorrados"
+"Ayúdame a generar un script que verifique la compresión de respuestas: necesito 
+comparar el tamaño de / sin header Accept-Encoding vs con Accept-Encoding: br, y 
+luego lo mismo con gzip. Quiero que muestre el Content-Encoding recibido y el % de 
+bytes ahorrados"
+
+"Ayúdame a definir una política de CORS que permita solo orígenes de confianza y 
+bloquee llamadas cross-origin no autorizadas. Necesito que la política especifique 
+explícitamente los orígenes, métodos y headers permitidos."
 
 ---
 *Este documento será actualizado progresivamente conforme se desarrollen los demás puntos del taller.*
-
-

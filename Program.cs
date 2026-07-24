@@ -91,6 +91,17 @@ builder.Services.AddScoped<ILinkRepository, LinkRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILinkService, LinkService>();
 
+// Registers CORS with a restrictive policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("RestrictiveCorsPolicy", policy =>
+    {
+        policy.WithOrigins("https://trusted.shortly.com")
+              .WithMethods("GET", "POST")
+              .WithHeaders("Content-Type", "Authorization");
+    });
+});
+
 // Registers response compression with Brotli and Gzip
 builder.Services.AddResponseCompression(options =>
 {
@@ -134,6 +145,9 @@ app.UseResponseCompression();
 
 // Enables request routing
 app.UseRouting();
+
+// Enables CORS (must come after UseRouting and before UseAuthentication/UseEndpoints)
+app.UseCors("RestrictiveCorsPolicy");
 
 // Enables authentication (must come after UseRouting)
 app.UseAuthentication();
