@@ -1,19 +1,19 @@
 # Request Tracing (X-Request-Id)
 
-Este documento detalla la implementación de trazabilidad de peticiones mediante el header `X-Request-Id` y la correlación de logs usando Serilog.
+This document details the implementation of request traceability using the `X-Request-Id` header and log correlation using Serilog.
 
-## Implementación
-Se creó el middleware `RequestTracingMiddleware` que intercepta todas las peticiones al inicio del pipeline (`Program.cs`). 
-Su función es:
-1. Buscar si el cliente ya envió un `X-Request-Id`. Si no, usa el `TraceIdentifier` nativo de ASP.NET Core o genera un nuevo UUID.
-2. Adjuntar este ID como header `X-Request-Id` en la respuesta (útil para que el cliente lo guarde si necesita reportar un error de soporte).
-3. Enriquecer el contexto de Serilog (`LogContext.PushProperty`) para que **todos** los logs generados durante la vida de esa petición incluyan este ID.
+## Implementation
+The `RequestTracingMiddleware` was created to intercept all requests at the beginning of the pipeline (`Program.cs`). 
+Its function is:
+1. Check if the client already sent an `X-Request-Id`. If not, it uses the native ASP.NET Core `TraceIdentifier` or generates a new UUID.
+2. Attach this ID as an `X-Request-Id` header in the response (useful for the client to save if they need to report a support error).
+3. Enrich the Serilog context (`LogContext.PushProperty`) so that **all** logs generated during the lifespan of that request include this ID.
 
-Se configuró el `outputTemplate` en `appsettings.json` para que los logs por consola expongan explícitamente el campo:
+The `outputTemplate` in `appsettings.json` was configured so that console logs explicitly expose the field:
 `{Timestamp:yyyy-MM-dd HH:mm:ss,fff} [{Level:u8}] [ReqId={RequestId}] ...`
 
-## Validación y Ejemplos
-Al hacer una petición al servidor (ej. un link inexistente `/missing-link` que detona un redirect fallido y logs de error en EF Core), podemos observar que el ID de la petición se propaga por todos los eventos de la aplicación de manera uniforme:
+## Validation and Examples
+When making a request to the server (e.g., a non-existent link `/missing-link` that triggers a failed redirect and EF Core error logs), we can observe that the request ID propagates through all application events uniformly:
 
 ```text
 2026-07-23 20:37:32,654 [DEBUG] [ReqId=0HNN93EVU0NVU:00000001] Shortly.Application.Services.LinkService ... - Retrieving link with shortUrl: missing-link
@@ -21,10 +21,10 @@ Al hacer una petición al servidor (ej. un link inexistente `/missing-link` que 
 2026-07-23 20:37:32,815 [ERROR] [ReqId=0HNN93EVU0NVU:00000001] Microsoft.EntityFrameworkCore.Query ... - An exception occurred while iterating over the results of a query
 ```
 
-Este RequestID exacto (`0HNN93EVU0NVU:00000001`) será retornado al cliente en el header `X-Request-Id` HTTP de la respuesta.
+This exact RequestID (`0HNN93EVU0NVU:00000001`) will be returned to the client in the HTTP `X-Request-Id` response header.
 
-## ¿Cómo Usarlo para Diagnóstico?
-Si un usuario reporta que una URL no redirige o que la plataforma está lenta:
-1. Pídele que abra las herramientas de desarrollador en su navegador (Network Tab) y te comparta el header `X-Request-Id` de la petición fallida.
-2. Filtra los logs en tu servidor buscando exclusivamente ese ID (ej. usando grep, o en herramientas de logging centralizado como Kibana, Datadog o Seq: `RequestId = '0HNN93EVU0NVU:00000001'`).
-3. Esto te entregará el hilo completo de ejecución exacto de *ese* usuario aislado del ruido del resto del tráfico.
+## How to Use It for Diagnostics?
+If a user reports that a URL is not redirecting or that the platform is slow:
+1. Ask them to open the developer tools in their browser (Network Tab) and share the `X-Request-Id` header of the failed request.
+2. Filter the logs on your server looking exclusively for that ID (e.g., using grep, or in centralized logging tools like Kibana, Datadog, or Seq: `RequestId = '0HNN93EVU0NVU:00000001'`).
+3. This will give you the exact execution thread of *that* user isolated from the noise of the rest of the traffic.

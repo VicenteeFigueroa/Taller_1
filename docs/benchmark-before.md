@@ -1,17 +1,17 @@
 # Benchmark Before Changes
 
-## Entorno de Pruebas
-- **Fecha y Hora:** 2026-07-21 20:07:41
-- **Sistema Operativo:** Microsoft Windows 11 Home Single Language
+## Test Environment
+- **Date and Time:** 2026-07-21 20:07:41
+- **Operating System:** Microsoft Windows 11 Home Single Language
 - **Hardware:** CPU: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz | RAM: 15.77 GB
-- **Versión de .NET:** 10.0.204
-- **Antivirus/Defender:** Activo (fuente potencial de varianza en localhost).
-- **Comando base:** `ab -n 1000 -c 10 [url]`
-- **Modo del Servidor:** ASP.NET Core Kestrel en modo **Release** (calentado con corridas previas de descarte).
+- **.NET Version:** 10.0.204
+- **Antivirus/Defender:** Active (potential source of variance on localhost).
+- **Base command:** `ab -n 1000 -c 10 [url]`
+- **Server Mode:** ASP.NET Core Kestrel in **Release** mode (warmed up with initial runs).
 
-## Resumen Ejecutivo
+## Executive Summary
 
-| Endpoint | Método | Req/seg | p50 (ms) | p90 (ms) | p99 (ms) | Transfer Rate (KB/s) | Fallos / Non-2xx |
+| Endpoint | Method | Req/sec | p50 (ms) | p90 (ms) | p99 (ms) | Transfer Rate (KB/s) | Failures / Non-2xx |
 |----------|--------|---------|----------|----------|----------|----------------------|------------------|
 | `/{shortUrl}` | GET | 94.29 | 7 | 31 | 1716 | 15.19 | 0 (1000 Non-2xx) |
 | `/Login` | POST | 4838.80 | 2 | 2 | 3 | 567.05 | 0 (1000 Non-2xx) |
@@ -19,13 +19,13 @@
 
 ---
 
-## Salida Detallada de Apache Bench (ab) y Contexto
+## Detailed Apache Bench (ab) Output and Context
 
-### 1. GET /{shortUrl} (Redirección a URL original)
-Este es el endpoint de redirección. La prueba se realizó con la URL semilla `/aspnet`, la cual **existe** en la base de datos y redirige a la documentación oficial.
-- **Hipótesis del bajo rendimiento:** El endpoint realiza un acceso de escritura en base de datos para incrementar el contador de clics (`IncrementClicks()`). Al correr con concurrencia de 10 (`-c 10`), se genera una fuerte contención y locks en SQLite. Esto explica la "cola larga" de latencia donde el `p99` llega a 1716ms y el máximo supera los 3 segundos. 
-- **Mejoras esperadas:** Esto justifica ampliamente la necesidad de **Response Caching (Item #2)** y **Conditional Redirects (Item #10)** para reducir los roundtrips a la base de datos.
-- *Nota:* Retorna HTTP `302 Found`, por lo que `ab` lo marca como "Non-2xx responses", lo cual es un comportamiento correcto.
+### 1. GET /{shortUrl} (Redirect to original URL)
+This is the redirect endpoint. The test was performed with the seed URL `/aspnet`, which **exists** in the database and redirects to the official documentation.
+- **Low performance hypothesis:** The endpoint performs a database write access to increment the click counter (`IncrementClicks()`). Running with a concurrency of 10 (`-c 10`) generates strong contention and locks in SQLite. This explains the "long tail" of latency where `p99` reaches 1716ms and the maximum exceeds 3 seconds. 
+- **Expected improvements:** This strongly justifies the need for **Response Caching (Item #2)** and **Conditional Redirects (Item #10)** to reduce database roundtrips.
+- *Note:* It returns HTTP `302 Found`, so `ab` marks it as "Non-2xx responses", which is expected behavior.
 
 ```text
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
@@ -73,10 +73,10 @@ Percentage of the requests served within a certain time (ms)
  100%   3107 (longest request)
 ```
 
-### 2. POST /Login (Validación de Autenticación Temprana)
-Este benchmark apunta al endpoint de autenticación mandando un payload de login estático.
-- **Contexto:** Dado que se envió sin el AntiForgery Token de Razor Pages, el framework rechazó tempranamente la petición devolviendo un `400 Bad Request` (contabilizado por `ab` como Non-2xx). 
-- **Uso en el Taller:** Este escenario actúa como "baseline de petición HTTP mínima y rechazo temprano". En la fase "after", implementaremos ráfagas más agresivas para evaluar el **Rate Limiting (Item #5)** que responderá con `429 Too Many Requests` incluso antes de esta validación del modelo.
+### 2. POST /Login (Early Authentication Validation)
+This benchmark targets the authentication endpoint sending a static login payload.
+- **Context:** Since it was sent without the Razor Pages AntiForgery Token, the framework rejected the request early returning a `400 Bad Request` (counted by `ab` as Non-2xx). 
+- **Workshop Use:** This scenario acts as a "minimum HTTP request and early rejection baseline". In the "after" phase, we will implement more aggressive bursts to evaluate **Rate Limiting (Item #5)** which will respond with `429 Too Many Requests` even before this model validation.
 
 ```text
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
@@ -127,9 +127,9 @@ Percentage of the requests served within a certain time (ms)
  100%     29 (longest request)
 ```
 
-### 3. GET / (Página de inicio estática/Render)
-Este endpoint carga el HTML de la página principal.
-- **Contexto:** Es ideal para medir los beneficios en transferencia de red de la **Compresión Brotli/Gzip (Item #6)** y para asegurar que los **Security Headers (Item #3)** no degradan severamente el rendimiento general.
+### 3. GET / (Static Homepage/Render)
+This endpoint loads the HTML of the main page.
+- **Context:** It is ideal to measure the network transfer benefits of **Brotli/Gzip Compression (Item #6)** and to ensure that **Security Headers (Item #3)** do not severely degrade overall performance.
 
 ```text
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>

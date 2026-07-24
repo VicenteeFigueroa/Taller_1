@@ -1,17 +1,17 @@
 # Liveness Health Check Endpoint
 
-Este documento describe la configuración del endpoint de estado (Health Check) implementado en la aplicación, diseñado para su integración con sistemas de monitoreo o balanceadores de carga (como Kubernetes, Docker Swarm, o AWS ALB).
+This document describes the configuration of the health check endpoint implemented in the application, designed for integration with monitoring systems or load balancers (such as Kubernetes, Docker Swarm, or AWS ALB).
 
-## Implementación (`Program.cs`)
+## Implementation (`Program.cs`)
 
-Se habilitó el middleware nativo de .NET `AddHealthChecks()` y se configuró un enrutamiento en `/health` con un `ResponseWriter` personalizado. 
-La lógica captura el momento exacto en el que levanta la aplicación (`DateTimeOffset.UtcNow` al inicio de `Program.cs`) y calcula el tiempo transcurrido para reportarlo como `uptime`.
+The native .NET middleware `AddHealthChecks()` was enabled, and a route at `/health` was configured with a custom `ResponseWriter`. 
+The logic captures the exact moment the application starts (`DateTimeOffset.UtcNow` at the beginning of `Program.cs`) and calculates the elapsed time to report it as `uptime`.
 
-## Payload de Respuesta
+## Response Payload
 
-Se probó el endpoint haciendo llamadas sucesivas para verificar que el servidor levanta correctamente y el tiempo de actividad aumenta.
+The endpoint was tested by making successive calls to verify that the server starts correctly and the uptime increases.
 
-**Ejemplo de respuesta (Status 200 OK):**
+**Example response (Status 200 OK):**
 ```json
 {
   "status": "Healthy",
@@ -20,7 +20,7 @@ Se probó el endpoint haciendo llamadas sucesivas para verificar que el servidor
 }
 ```
 
-### Justificación de los campos
-- **`status`**: Indica si la aplicación está respondiendo. Actualmente siempre devuelve `Healthy` ya que sirve como una prueba *liveness* (si el proceso no responde, el request dará timeout y el orquestador sabrá que la aplicación murió).
-- **`uptime`**: Expone el tiempo de actividad continuo del proceso en formato `d.hh:mm:ss.fffffff`. Extremadamente útil para detectar *CrashLoops* (reinicios constantes de la aplicación) desde el sistema de monitoreo.
-- **`timestamp`**: Sirve para confirmar que la respuesta no es un caché pegado y que el servidor está generando respuestas dinámicas en tiempo real.
+### Justification of Fields
+- **`status`**: Indicates if the application is responding. Currently, it always returns `Healthy` since it serves as a *liveness* probe (if the process does not respond, the request will time out and the orchestrator will know the application died).
+- **`uptime`**: Exposes the continuous uptime of the process in the format `d.hh:mm:ss.fffffff`. Extremely useful for detecting *CrashLoops* (constant application restarts) from the monitoring system.
+- **`timestamp`**: Serves to confirm that the response is not a stuck cache and that the server is generating dynamic responses in real time.

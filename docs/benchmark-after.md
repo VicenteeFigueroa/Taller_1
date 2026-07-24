@@ -1,15 +1,15 @@
-﻿# Benchmark After Changes
+# Benchmark After Changes
 
-## Entorno de Pruebas
-- **Fecha y Hora:** 2026-07-23 22:06:03
-- **Sistema Operativo:** Microsoft Windows 11 Home Single Language
+## Test Environment
+- **Date and Time:** 2026-07-23 22:06:03
+- **Operating System:** Microsoft Windows 11 Home Single Language
 - **Hardware:** CPU: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz | RAM: 15.77 GB
-- **Comando base:** `ab -n 1000 -c 10 [url]`
-- **Modo del Servidor:** ASP.NET Core Kestrel en modo **Release** (con JIT warmup previo).
+- **Base command:** `ab -n 1000 -c 10 [url]`
+- **Server Mode:** ASP.NET Core Kestrel in **Release** mode (with prior JIT warmup).
 
-## Resumen Ejecutivo
+## Executive Summary
 
-| Endpoint | Método | Req/seg | p50 (ms) | p90 (ms) | p99 (ms) | Fallos / Non-2xx |
+| Endpoint | Method | Req/sec | p50 (ms) | p90 (ms) | p99 (ms) | Failures / Non-2xx |
 |----------|--------|---------|----------|----------|----------|------------------|
 | /{shortUrl} | GET | 85.42 | 10 | 298 | 1251 | 0 (1000 Non-2xx) |
 | /Login | POST | 1510.42 | 6 | 8 | 10 | 0 (1000 Non-2xx) |
@@ -17,13 +17,13 @@
 
 ---
 
-## Salida Detallada de Apache Bench (ab)
+## Detailed Apache Bench (ab) Output
 
-### 1. GET /{shortUrl} (Redirección a URL original)
-Este endpoint fue optimizado mediante **Response Caching (Item #2)** y **Conditional Redirects (Item #10)**.
-*Nota: Retorna \302 Found\, por lo que \b\ lo marca como "Non-2xx responses". Esto es esperado.*
+### 1. GET /{shortUrl} (Redirect to original URL)
+This endpoint was optimized using **Response Caching (Item #2)** and **Conditional Redirects (Item #10)**.
+*Note: Returns `302 Found`, so `ab` marks it as "Non-2xx responses". This is expected behavior.*
 
-\\\	ext
+```text
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
@@ -67,13 +67,13 @@ Percentage of the requests served within a certain time (ms)
   98%    794
   99%   1251
  100%   2965 (longest request)
-\\\
+```
 
-### 2. POST /Login (Validación de Autenticación)
-Este endpoint fue protegido mediante **Rate Limiting (Item #5)**.
-*Nota: Al enviar la petición mediante \b\ sin el token AntiForgery, retorna \400 Bad Request\, lo cual es captado como \Non-2xx response\. El rate limiting fue aplicado antes de esta validación.*
+### 2. POST /Login (Authentication Validation)
+This endpoint was protected using **Rate Limiting (Item #5)**.
+*Note: By sending the request via `ab` without the AntiForgery token, it returns `400 Bad Request`, which is caught as a `Non-2xx response`. The rate limiting was applied before this validation.*
 
-\\\	ext
+```text
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
@@ -120,12 +120,12 @@ Percentage of the requests served within a certain time (ms)
   98%      9
   99%     10
  100%     48 (longest request)
-\\\
+```
 
-### 3. GET / (Página de inicio y creación de URLs)
-Este endpoint se benefició de la **Compresión Brotli/Gzip (Item #6)** y **Security Headers (Item #3)**.
+### 3. GET / (Static Homepage and URL creation)
+This endpoint benefited from **Brotli/Gzip Compression (Item #6)** and **Security Headers (Item #3)**.
 
-\\\	ext
+```text
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
@@ -168,5 +168,4 @@ Percentage of the requests served within a certain time (ms)
   98%     19
   99%     21
  100%    119 (longest request)
-\\\
-
+```
