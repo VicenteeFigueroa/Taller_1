@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.ResponseCompression;
+using System.Text.Json;
 using System.IO.Compression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -102,6 +104,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Registers Health Checks service
+builder.Services.AddHealthChecks();
+
 // Registers response compression with Brotli and Gzip
 builder.Services.AddResponseCompression(options =>
 {
@@ -172,6 +177,23 @@ app.MapScalarApiReference();
 
 // Maps the redirect endpoint GET /{shortUrl} from Endpoints/UrlRedirectEndpoint.cs
 app.MapUrlRedirect();
+
+// Maps the Health Check endpoint with a custom JSON response writer
+var appStartupTime = DateTimeOffset.UtcNow;
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var response = new
+        {
+            status = report.Status.ToString(),
+            uptime = (DateTimeOffset.UtcNow - appStartupTime).ToString("c"),
+            timestamp = DateTimeOffset.UtcNow
+        };
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+    }
+});
 
 // Creates a scope for scoped services (e.g. AppDbContext)
 using (var scope = app.Services.CreateScope())
